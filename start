@@ -1,0 +1,5 @@
+#!/bin/bash
+mkdir ../data
+mv ./notebooks/* ../notebook/
+mv ./datasets/* ../data/
+../bin/zeppelin.sh

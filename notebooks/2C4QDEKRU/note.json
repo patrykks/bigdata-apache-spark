@@ -1,0 +1,89 @@
+{
+  "paragraphs": [
+    {
+      "title": "Zadanie 1",
+      "text": "",
+      "dateUpdated": "Dec 3, 2016 7:28:48 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480783042178_1043734289",
+      "id": "20161203-163722_48549069",
+      "dateCreated": "Dec 3, 2016 4:37:22 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Zadanie 2",
+      "text": "",
+      "dateUpdated": "Dec 3, 2016 4:37:26 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480783011851_1837289024",
+      "id": "20161203-163651_570312931",
+      "dateCreated": "Dec 3, 2016 4:36:51 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "Apache Spark - GraphX",
+  "id": "2C4QDEKRU",
+  "angularObjects": {
+    "2C582M71K:shared_process": [],
+    "2C38248QT:shared_process": [],
+    "2C3XGX7VJ:shared_process": [],
+    "2C2WH6FYK:shared_process": [],
+    "2C4KBZCWU:shared_process": [],
+    "2C2NKBKV5:shared_process": [],
+    "2C5F9VEX4:shared_process": [],
+    "2C4K9AT4T:shared_process": [],
+    "2C5E59H8D:shared_process": []
+  },
+  "config": {},
+  "info": {}
+}
