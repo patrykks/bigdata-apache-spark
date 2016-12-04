@@ -1,9 +1,51 @@
 {
   "paragraphs": [
     {
-      "title": "Zadanie 1",
-      "text": "",
-      "dateUpdated": "Dec 3, 2016 7:28:48 PM",
+      "title": "Zadanie 1 (polecenia na slajdach)",
+      "text": "%spark\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\ncase class Peep(name: String, age: Int)\n\nval vertexArray \u003d Array(\n  (1L, Peep(\"Kim\", 23)),\n  (2L, Peep(\"Pat\", 31)),\n  (3L, Peep(\"Chris\", 52)),\n  (4L, Peep(\"Kelly\", 39)),\n  (5L, Peep(\"Leslie\", 45))\n  )\nval edgeArray \u003d Array(\n  Edge(2L, 1L, 7),\n  Edge(2L, 4L, 2),\n  Edge(3L, 2L, 4),\n  Edge(3L, 5L, 3),\n  Edge(4L, 1L, 1),\n  Edge(5L, 3L, 9)\n  )\n\nval vertexRDD: RDD[(Long, Peep)] \u003d sc.parallelize(vertexArray)\nval edgeRDD: RDD[Edge[Int]] \u003d sc.parallelize(edgeArray)\nval g: Graph[Peep, Int] \u003d Graph(vertexRDD, edgeRDD)\n\nval results \u003d g.triplets.filter(t \u003d\u003e t.attr \u003e 7)\n\nfor (triplet \u003c- results.collect) {\n  println(s\"${triplet.srcAttr.name} loves ${triplet.dstAttr.name}\")\n}",
+      "dateUpdated": "Dec 4, 2016 9:07:23 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480841809723_1833123548",
+      "id": "20161204-085649_1987736164",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\ndefined class Peep\n\nvertexArray: Array[(Long, Peep)] \u003d Array((1,Peep(Kim,23)), (2,Peep(Pat,31)), (3,Peep(Chris,52)), (4,Peep(Kelly,39)), (5,Peep(Leslie,45)))\n\nedgeArray: Array[org.apache.spark.graphx.Edge[Int]] \u003d Array(Edge(2,1,7), Edge(2,4,2), Edge(3,2,4), Edge(3,5,3), Edge(4,1,1), Edge(5,3,9))\n\nvertexRDD: org.apache.spark.rdd.RDD[(Long, Peep)] \u003d ParallelCollectionRDD[0] at parallelize at \u003cconsole\u003e:35\n\nedgeRDD: org.apache.spark.rdd.RDD[org.apache.spark.graphx.Edge[Int]] \u003d ParallelCollectionRDD[1] at parallelize at \u003cconsole\u003e:33\n\ng: org.apache.spark.graphx.Graph[Peep,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@2e582e3f\n\nresults: org.apache.spark.rdd.RDD[org.apache.spark.graphx.EdgeTriplet[Peep,Int]] \u003d MapPartitionsRDD[19] at filter at \u003cconsole\u003e:43\nLeslie loves Chris\n"
+      },
+      "dateCreated": "Dec 4, 2016 8:56:49 AM",
+      "dateStarted": "Dec 4, 2016 8:57:20 AM",
+      "dateFinished": "Dec 4, 2016 8:57:41 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Zadanie 2 (polecenia na slajdach)",
+      "text": "%spark\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\nimport scala.util.MurmurHash\n\nval dataFrame \u003d sqlContext.read.options(Map(\"header\" -\u003e \"true\")).csv(\"data/2008.csv\")\n\n// zobaczmy na schemat wczytanych danych \ndataFrame.printSchema\n\n// zobaczmy na przykladowe dane\ndataFrame.take(2)\n\n// przygotujmy struktury potrzebne do stwoerzenia graphx\u0027owego grafu\n\nval flightsFromTo \u003d dataFrame.select($\"Origin\",$\"Dest\")\nval airportCodes \u003d dataFrame.select($\"Origin\", $\"Dest\").flatMap(x \u003d\u003e Iterable(x(0).toString, x(1).toString))\nval airportVertices: RDD[(VertexId, String)] \u003d airportCodes.distinct().map((x : String) \u003d\u003e ((MurmurHash.stringHash(x): Long), x)).rdd\nval defaultAirport \u003d (\"Missing\")\nval flightEdges \u003d flightsFromTo.map(x \u003d\u003e ((MurmurHash.stringHash(x(0).toString),MurmurHash.stringHash(x(1).toString)), 1)).rdd.reduceByKey(_+_).map(x \u003d\u003e Edge(x._1._1, x._1._2,x._2))\nval graph \u003d Graph(airportVertices, flightEdges, defaultAirport)\ngraph.persist() // we\u0027re going to be using it a lot\n\n// Basic statistic\n\n// Jak duzy jest nasz graf \ngraph.numVertices // 305\ngraph.numEdges // 5366\n\n// 10 najczestszych lotow z lotniska do lotniska\ngraph.triplets.sortBy(_.attr, ascending\u003dfalse).map(triplet \u003d\u003e \"There were \" + triplet.attr.toString + \" flights from \" + triplet.srcAttr + \" to \" + triplet.dstAttr + \".\").take(10)\n\n// 10 najrzadszych lotow z lotniska do lotniska\ngraph.triplets.sortBy(_.attr).map(triplet \u003d\u003e \"There were \" + triplet.attr.toString + \" flights from \" + triplet.srcAttr + \" to \" + triplet.dstAttr + \".\").take(10)\n\n// lotnisko o najwiekszej liczbie lotow przylatujacych\ngraph.inDegrees.join(airportVertices).sortBy(_._2._1, ascending\u003dfalse).take(1)\n\n// lotnisko o najwiekszej liczbie lotow odlatujacych\ngraph.outDegrees.join(airportVertices).sortBy(_._2._1, ascending\u003dfalse).take(1)\n\n// PageRank - tu czesc dla ludzi, korzystajac z utworzonych struktur prosze znalezc najbardziej popularne lotniska wg algorytmu Pange Rank\n\nval ranks \u003d graph.pageRank(0.0001).vertices\n\nval ranksAndAirports \u003d ranks.join(airportVertices).sortBy(_._2._1, ascending\u003dfalse).map(_._2._2).take(10)",
+      "dateUpdated": "Dec 4, 2016 9:07:28 AM",
       "config": {
         "colWidth": 12.0,
         "graph": {
@@ -31,14 +73,21 @@
       "apps": [],
       "jobName": "paragraph_1480783042178_1043734289",
       "id": "20161203-163722_48549069",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\nimport scala.util.MurmurHash\n\ndataFrame: org.apache.spark.sql.DataFrame \u003d [Year: string, Month: string ... 27 more fields]\nroot\n |-- Year: string (nullable \u003d true)\n |-- Month: string (nullable \u003d true)\n |-- DayofMonth: string (nullable \u003d true)\n |-- DayOfWeek: string (nullable \u003d true)\n |-- DepTime: string (nullable \u003d true)\n |-- CRSDepTime: string (nullable \u003d true)\n |-- ArrTime: string (nullable \u003d true)\n |-- CRSArrTime: string (nullable \u003d true)\n |-- UniqueCarrier: string (nullable \u003d true)\n |-- FlightNum: string (nullable \u003d true)\n |-- TailNum: string (nullable \u003d true)\n |-- ActualElapsedTime: string (nullable \u003d true)\n |-- CRSElapsedTime: string (nullable \u003d true)\n |-- AirTime: string (nullable \u003d true)\n |-- ArrDelay: string (nullable \u003d true)\n |-- DepDelay: string (nullable \u003d true)\n |-- Origin: string (nullable \u003d true)\n |-- Dest: string (nullable \u003d true)\n |-- Distance: string (nullable \u003d true)\n |-- TaxiIn: string (nullable \u003d true)\n |-- TaxiOut: string (nullable \u003d true)\n |-- Cancelled: string (nullable \u003d true)\n |-- CancellationCode: string (nullable \u003d true)\n |-- Diverted: string (nullable \u003d true)\n |-- CarrierDelay: string (nullable \u003d true)\n |-- WeatherDelay: string (nullable \u003d true)\n |-- NASDelay: string (nullable \u003d true)\n |-- SecurityDelay: string (nullable \u003d true)\n |-- LateAircraftDelay: string (nullable \u003d true)\n\n\nres46: Array[org.apache.spark.sql.Row] \u003d Array([2008,1,3,4,2003,1955,2211,2225,WN,335,N712SW,128,150,116,-14,8,IAD,TPA,810,4,8,0,null,0,NA,NA,NA,NA,NA], [2008,1,3,4,754,735,1002,1000,WN,3231,N772SW,128,145,113,2,19,IAD,TPA,810,5,10,0,null,0,NA,NA,NA,NA,NA])\n\nflightsFromTo: org.apache.spark.sql.DataFrame \u003d [Origin: string, Dest: string]\n\nairportCodes: org.apache.spark.sql.Dataset[String] \u003d [value: string]\n\nwarning: there was one deprecation warning; re-run with -deprecation for details\n\nairportVertices: org.apache.spark.rdd.RDD[(org.apache.spark.graphx.VertexId, String)] \u003d MapPartitionsRDD[1984] at rdd at \u003cconsole\u003e:161\n\ndefaultAirport: String \u003d Missing\n\nwarning: there were two deprecation warnings; re-run with -deprecation for details\n\nflightEdges: org.apache.spark.rdd.RDD[org.apache.spark.graphx.Edge[Int]] \u003d MapPartitionsRDD[1991] at map at \u003cconsole\u003e:161\n\ngraph: org.apache.spark.graphx.Graph[String,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@8b851c2\n\nres47: org.apache.spark.graphx.Graph[String,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@8b851c2\n\nres48: Long \u003d 305\n\nres49: Long \u003d 5366\n\nres50: Array[String] \u003d Array(There were 13788 flights from SFO to LAX., There were 13390 flights from LAX to SFO., There were 12383 flights from OGG to HNL., There were 12035 flights from LGA to BOS., There were 12029 flights from BOS to LGA., There were 12014 flights from HNL to OGG., There were 11773 flights from LAX to LAS., There were 11729 flights from LAS to LAX., There were 11257 flights from LAX to SAN., There were 11224 flights from SAN to LAX.)\n\nres51: Array[String] \u003d Array(There were 1 flights from PDX to MSN., There were 1 flights from BOS to GGG., There were 1 flights from DEN to ROC., There were 1 flights from DEN to CYS., There were 1 flights from PHL to GRR., There were 1 flights from PHL to ICT., There were 1 flights from FSD to MSN., There were 1 flights from FSD to SDF., There were 1 flights from BTV to IND., There were 1 flights from TUL to OMA.)\n\nres52: Array[(org.apache.spark.graphx.VertexId, (Int, String))] \u003d Array((2042033420,(173,ATL)))\n\nres53: Array[(org.apache.spark.graphx.VertexId, (Int, String))] \u003d Array((2042033420,(173,ATL)))\n\nranks: org.apache.spark.graphx.VertexRDD[Double] \u003d VertexRDDImpl[2827] at RDD at VertexRDD.scala:57\n\nranksAndAirports: Array[String] \u003d Array(ATL, DFW, ORD, MSP, SLC, DEN, DTW, IAH, CVG, LAX)\n"
+      },
       "dateCreated": "Dec 3, 2016 4:37:22 PM",
-      "status": "READY",
+      "dateStarted": "Dec 3, 2016 10:23:51 PM",
+      "dateFinished": "Dec 3, 2016 10:25:42 PM",
+      "status": "FINISHED",
       "progressUpdateIntervalMs": 500
     },
     {
       "title": "Zadanie 2",
       "text": "",
-      "dateUpdated": "Dec 3, 2016 4:37:26 PM",
+      "dateUpdated": "Dec 4, 2016 9:08:18 AM",
       "config": {
         "colWidth": 12.0,
         "graph": {
@@ -57,7 +106,7 @@
         },
         "enabled": true,
         "editorMode": "ace/mode/scala",
-        "title": true
+        "title": false
       },
       "settings": {
         "params": {},
@@ -68,6 +117,7 @@
       "id": "20161203-163651_570312931",
       "dateCreated": "Dec 3, 2016 4:36:51 PM",
       "status": "READY",
+      "errorMessage": "",
       "progressUpdateIntervalMs": 500
     }
   ],
