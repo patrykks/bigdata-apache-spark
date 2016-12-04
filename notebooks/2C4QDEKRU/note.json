@@ -1,9 +1,50 @@
 {
   "paragraphs": [
     {
-      "title": "Zadanie 1 (polecenia na slajdach)",
-      "text": "%spark\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\ncase class Peep(name: String, age: Int)\n\nval vertexArray \u003d Array(\n  (1L, Peep(\"Kim\", 23)),\n  (2L, Peep(\"Pat\", 31)),\n  (3L, Peep(\"Chris\", 52)),\n  (4L, Peep(\"Kelly\", 39)),\n  (5L, Peep(\"Leslie\", 45))\n  )\nval edgeArray \u003d Array(\n  Edge(2L, 1L, 7),\n  Edge(2L, 4L, 2),\n  Edge(3L, 2L, 4),\n  Edge(3L, 5L, 3),\n  Edge(4L, 1L, 1),\n  Edge(5L, 3L, 9)\n  )\n\nval vertexRDD: RDD[(Long, Peep)] \u003d sc.parallelize(vertexArray)\nval edgeRDD: RDD[Edge[Int]] \u003d sc.parallelize(edgeArray)\nval g: Graph[Peep, Int] \u003d Graph(vertexRDD, edgeRDD)\n\nval results \u003d g.triplets.filter(t \u003d\u003e t.attr \u003e 7)\n\nfor (triplet \u003c- results.collect) {\n  println(s\"${triplet.srcAttr.name} loves ${triplet.dstAttr.name}\")\n}",
-      "dateUpdated": "Dec 4, 2016 9:07:23 AM",
+      "title": "Snippet 1 - zadanie",
+      "text": "%spark\n\n/*\n     Waszym zadaniem jest odpowiednie zainicjalizowanie RDD wierzcholkow i krawedzi \n*/\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\nval vertexArray \u003d Array(\n  (1L, (\"Alice\", 28)),\n  (2L, (\"Bob\", 27)),\n  (3L, (\"Charlie\", 65)),\n  (4L, (\"David\", 42)),\n  (5L, (\"Ed\", 55)),\n  (6L, (\"Fran\", 50))\n  )\nval edgeArray \u003d Array(\n  Edge(2L, 1L, 7),\n  Edge(2L, 4L, 2),\n  Edge(3L, 2L, 4),\n  Edge(3L, 6L, 3),\n  Edge(4L, 1L, 1),\n  Edge(5L, 2L, 2),\n  Edge(5L, 3L, 8),\n  Edge(5L, 6L, 3)\n  )\n  \n//val vertexRDD: RDD[(Long, (String, Int))] \u003d // Implement\n//val edgeRDD: RDD[Edge[Int]] \u003d // Implement\n",
+      "dateUpdated": "Dec 4, 2016 8:36:05 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480872016331_-47337552",
+      "id": "20161204-172016_1368208492",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\nvertexArray: Array[(Long, (String, Int))] \u003d Array((1,(Alice,28)), (2,(Bob,27)), (3,(Charlie,65)), (4,(David,42)), (5,(Ed,55)), (6,(Fran,50)))\n\nedgeArray: Array[org.apache.spark.graphx.Edge[Int]] \u003d Array(Edge(2,1,7), Edge(2,4,2), Edge(3,2,4), Edge(3,6,3), Edge(4,1,1), Edge(5,2,2), Edge(5,3,8), Edge(5,6,3))\n\nvertexRDD: org.apache.spark.rdd.RDD[(Long, (String, Int))] \u003d ParallelCollectionRDD[21] at parallelize at \u003cconsole\u003e:45\n\nedgeRDD: org.apache.spark.rdd.RDD[org.apache.spark.graphx.Edge[Int]] \u003d ParallelCollectionRDD[22] at parallelize at \u003cconsole\u003e:45\n"
+      },
+      "dateCreated": "Dec 4, 2016 5:20:16 PM",
+      "dateStarted": "Dec 4, 2016 7:17:31 PM",
+      "dateFinished": "Dec 4, 2016 7:17:33 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Snippet 2 - zadanie",
+      "text": "%spark\n\n/*\n     Waszym zadaniem jest wyswietlenie uzytkownikow ktorzy maja przynajmniej 30 lat\n*/\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\nval graph: Graph[(String, Int), Int] \u003d Graph(vertexRDD, edgeRDD)\n\n\n//graph.vertices.filter {\n//  case (id, (name, age)) \u003d\u003e /* implement */\n//}.collect.foreach {\n//  case (id, (name, age)) \u003d\u003e /* implement */\n//}\n\n\n/*\nOczekiwany rezultat:\n\n    David is 42\n    Fran is 50\n    Ed is 55\n    Charlie is 65\n*/\n\n",
+      "dateUpdated": "Dec 4, 2016 8:36:35 PM",
       "config": {
         "colWidth": 12.0,
         "graph": {
@@ -29,16 +70,345 @@
         "forms": {}
       },
       "apps": [],
-      "jobName": "paragraph_1480841809723_1833123548",
-      "id": "20161204-085649_1987736164",
+      "jobName": "paragraph_1480872472551_-948958587",
+      "id": "20161204-172752_794446119",
       "result": {
         "code": "SUCCESS",
         "type": "TEXT",
-        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\ndefined class Peep\n\nvertexArray: Array[(Long, Peep)] \u003d Array((1,Peep(Kim,23)), (2,Peep(Pat,31)), (3,Peep(Chris,52)), (4,Peep(Kelly,39)), (5,Peep(Leslie,45)))\n\nedgeArray: Array[org.apache.spark.graphx.Edge[Int]] \u003d Array(Edge(2,1,7), Edge(2,4,2), Edge(3,2,4), Edge(3,5,3), Edge(4,1,1), Edge(5,3,9))\n\nvertexRDD: org.apache.spark.rdd.RDD[(Long, Peep)] \u003d ParallelCollectionRDD[0] at parallelize at \u003cconsole\u003e:35\n\nedgeRDD: org.apache.spark.rdd.RDD[org.apache.spark.graphx.Edge[Int]] \u003d ParallelCollectionRDD[1] at parallelize at \u003cconsole\u003e:33\n\ng: org.apache.spark.graphx.Graph[Peep,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@2e582e3f\n\nresults: org.apache.spark.rdd.RDD[org.apache.spark.graphx.EdgeTriplet[Peep,Int]] \u003d MapPartitionsRDD[19] at filter at \u003cconsole\u003e:43\nLeslie loves Chris\n"
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\ngraph: org.apache.spark.graphx.Graph[(String, Int),Int] \u003d org.apache.spark.graphx.impl.GraphImpl@66b47ae0\nCharlie is 65\nDavid is 42\nEd is 55\nFran is 50\n"
       },
-      "dateCreated": "Dec 4, 2016 8:56:49 AM",
-      "dateStarted": "Dec 4, 2016 8:57:20 AM",
-      "dateFinished": "Dec 4, 2016 8:57:41 AM",
+      "dateCreated": "Dec 4, 2016 5:27:52 PM",
+      "dateStarted": "Dec 4, 2016 7:17:41 PM",
+      "dateFinished": "Dec 4, 2016 7:17:42 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Snippet 3 - zadanie",
+      "text": "%spark\n\n/*\n    Waszym zadaniem jest wyświetlenie opisu relacji \"kto lubi kogo\". Patrzcie -\u003e Oczekiwany rezultat\n*/\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\n//for (triplet \u003c- graph.triplets.collect) {\n /**\n   * Triplet has the following Fields:\n   *   triplet.srcAttr: (String, Int) // triplet.srcAttr._1 is the name\n   *   triplet.dstAttr: (String, Int)\n   *   triplet.attr: Int\n   *   triplet.srcId: VertexId\n   *   triplet.dstId: VertexId\n   */\n//}\n\n/*\nOczekiwany rezultat:\n\n    Bob likes Alice\n    Bob likes David\n    Charlie likes Bob\n    Charlie likes Fran\n    David likes Alice\n    Ed likes Bob\n    Ed likes Charlie\n    Ed likes Fran\n*/\n",
+      "dateUpdated": "Dec 4, 2016 8:39:35 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480873196661_-838860750",
+      "id": "20161204-173956_763685756",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\nBob likes Alice\nBob likes David\nCharlie likes Bob\nCharlie likes Fran\nDavid likes Alice\nEd likes Bob\nEd likes Charlie\nEd likes Fran\n"
+      },
+      "dateCreated": "Dec 4, 2016 5:39:56 PM",
+      "dateStarted": "Dec 4, 2016 7:17:52 PM",
+      "dateFinished": "Dec 4, 2016 7:17:53 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Snippet 4 - przyklad",
+      "text": "%spark\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\n// Define a class to more clearly model the user property\ncase class User(name: String, age: Int, inDeg: Int, outDeg: Int)\n// Create a user Graph\nval initialUserGraph: Graph[User, Int] \u003d graph.mapVertices{ case (id, (name, age)) \u003d\u003e User(name, age, 0, 0) }\n\n// Fill in the degree information\nval userGraph \u003d initialUserGraph.outerJoinVertices(initialUserGraph.inDegrees) {\n  case (id, u, inDegOpt) \u003d\u003e User(u.name, u.age, inDegOpt.getOrElse(0), u.outDeg)\n}.outerJoinVertices(initialUserGraph.outDegrees) {\n  case (id, u, outDegOpt) \u003d\u003e User(u.name, u.age, u.inDeg, outDegOpt.getOrElse(0))\n}\n\n",
+      "dateUpdated": "Dec 4, 2016 8:41:37 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480874709794_179634469",
+      "id": "20161204-180509_978359032",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\ndefined class User\n\ninitialUserGraph: org.apache.spark.graphx.Graph[User,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@4cffb7ee\n\nuserGraph: org.apache.spark.graphx.Graph[User,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@51d9e2f9\nUser 1 is called Alice and is liked by 2 people.\nUser 2 is called Bob and is liked by 2 people.\nUser 3 is called Charlie and is liked by 1 people.\nUser 4 is called David and is liked by 1 people.\nUser 5 is called Ed and is liked by 0 people.\nUser 6 is called Fran and is liked by 2 people.\n"
+      },
+      "dateCreated": "Dec 4, 2016 6:05:09 PM",
+      "dateStarted": "Dec 4, 2016 8:02:34 PM",
+      "dateFinished": "Dec 4, 2016 8:02:36 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Snippet 5 - zadanie",
+      "text": "%spark\n\n/*\n    Waszym zadaniem jest wypisanie liczby ludzi jaka lubi kazdego uzytkownika\n*/\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\n\n\n/*\nOczekiwany rezultat:\n\n    User 1 is called Alice and is liked by 2 people.\n    User 2 is called Bob and is liked by 2 people.\n    User 3 is called Charlie and is liked by 1 people.\n    User 4 is called David and is liked by 1 people.\n    User 5 is called Ed and is liked by 0 people.\n    User 6 is called Fran and is liked by 2 people.\n*/\n",
+      "dateUpdated": "Dec 4, 2016 8:43:48 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480884087313_-1267234363",
+      "id": "20161204-204127_1557898804",
+      "dateCreated": "Dec 4, 2016 8:41:27 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Snippet 6 - zadanie",
+      "text": "%spark\n\n/*\n    Waszym zadaniem jest wypisanie imion osob ktore sa lubiani przez taka sama liczbe osob jaka sami lubia\n*/\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\n\n/*\nOczekiwany rezultat:\n\n    Bob\n    David\n*/\n\n",
+      "dateUpdated": "Dec 4, 2016 8:46:51 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "lineNumbers": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480880423177_1549703924",
+      "id": "20161204-194023_631072155",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\nBob\nDavid\n"
+      },
+      "dateCreated": "Dec 4, 2016 7:40:23 PM",
+      "dateStarted": "Dec 4, 2016 8:02:38 PM",
+      "dateFinished": "Dec 4, 2016 8:02:39 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Snippet 7 - przyklad",
+      "text": "%spark\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\n// Find the oldest follower for each user\nval oldestFollower: VertexRDD[(String, Int)] \u003d userGraph.aggregateMessages[(String, Int)](\n  // For each edge send a message to the destination vertex with the attribute of the source vertex\n  edge \u003d\u003e edge.sendToDst(edge.srcAttr.name, edge.srcAttr.age),\n  // To combine messages take the message for the older follower\n  (a, b) \u003d\u003e if (a._2 \u003e b._2) a else b\n  )\n  \noldestFollower.collect.foreach {\n   case (id, str) \u003d\u003e println(str)\n}",
+      "dateUpdated": "Dec 4, 2016 10:19:08 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480884866061_-254272063",
+      "id": "20161204-205426_379737290",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\noldestFollower: org.apache.spark.graphx.VertexRDD[(String, Int)] \u003d VertexRDDImpl[249] at RDD at VertexRDD.scala:57\n(David,42)\n(Charlie,65)\n(Ed,55)\n(Bob,27)\n(Charlie,65)\n"
+      },
+      "dateCreated": "Dec 4, 2016 8:54:26 PM",
+      "dateStarted": "Dec 4, 2016 10:19:08 PM",
+      "dateFinished": "Dec 4, 2016 10:19:09 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Snippet 8 - zadanie",
+      "text": "%spark\n\n\n/*\n    Waszym zadaniem jest znalezienie dla kazdego usera imienia jego najstarszego followera\n*/\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\n// Find the oldest follower for each user\nval oldestFollower: VertexRDD[(String, Int)] \u003d userGraph.aggregateMessages[(String, Int)](\n  // For each edge send a message to the destination vertex with the attribute of the source vertex\n  edge \u003d\u003e edge.sendToDst(edge.srcAttr.name, edge.srcAttr.age),\n  // To combine messages take the message for the older follower\n  (a, b) \u003d\u003e if (a._2 \u003e b._2) a else b\n  )\n\nuserGraph.vertices.leftJoin(oldestFollower) { (id, user, optOldestFollower) \u003d\u003e\n  /**\n   *\n   * Try using the match syntax:\n   *\n   *  optOldestFollower match {\n   *    case None \u003d\u003e \"No followers! implement me!\"\n   *    case Some((name, age)) \u003d\u003e \"implement me!\"\n   *  }\n   *\n   */\n}\n\n/*\n    David is the oldest follower of Alice.\n    Charlie is the oldest follower of Bob.\n    Ed is the oldest follower of Charlie.\n    Bob is the oldest follower of David.\n    Ed does not have any followers.\n    Charlie is the oldest follower of Fran.\n*/",
+      "dateUpdated": "Dec 4, 2016 10:24:32 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480885009730_1434607042",
+      "id": "20161204-205649_700958540",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\noldestFollower: org.apache.spark.graphx.VertexRDD[(String, Int)] \u003d VertexRDDImpl[253] at RDD at VertexRDD.scala:57\nDavid is the oldest follower of Alice.\nCharlie is the oldest follower of Bob.\nEd is the oldest follower of Charlie.\nBob is the oldest follower of David.\nEd does not have any followers.\nCharlie is the oldest follower of Fran.\n"
+      },
+      "dateCreated": "Dec 4, 2016 8:56:49 PM",
+      "dateStarted": "Dec 4, 2016 10:21:38 PM",
+      "dateFinished": "Dec 4, 2016 10:21:39 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Snippet 9 - zadanie",
+      "text": "%spark\n\n/*\n    Waszym zadaniem jest znalezienie sredniej wieku followerso\u0027w dla kazdego uzytkownika\n*/\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\n\nval averageAge: VertexRDD[Double] \u003d userGraph.aggregateMessages[(Int, Double)](\n  // map function returns a tuple of (1, Age)\n  // put map function here,\n  // reduce function combines (sumOfFollowers, sumOfAge)\n  // put reduce function here\n  ).mapValues((id, p) \u003d\u003e p._2 / p._1)\n\n// Display the results\nuserGraph.vertices.leftJoin(averageAge) { (id, user, optAverageAge) \u003d\u003e\n  optAverageAge match {\n    case None \u003d\u003e s\"${user.name} does not have any followers.\"\n    case Some(avgAge) \u003d\u003e s\"The average age of ${user.name}\\\u0027s followers is $avgAge.\"\n  }\n}.collect.foreach { case (id, str) \u003d\u003e println(str) }\n\n/*\nOczekiwany rezultat:\n\nThe average age of Alice\u0027s followers is 34.5.\nThe average age of Bob\u0027s followers is 60.0.\nThe average age of Charlie\u0027s followers is 55.0.\nThe average age of David\u0027s followers is 27.0.\nEd does not have any followers.\nThe average age of Fran\u0027s followers is 60.0.\n\n*/\n",
+      "dateUpdated": "Dec 4, 2016 9:44:52 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480880585077_2053137731",
+      "id": "20161204-194305_1917569452",
+      "result": {
+        "code": "ERROR",
+        "type": "TEXT",
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\n\n\n\n\u003cconsole\u003e:131: error: not enough arguments for method aggregateMessages: (sendMsg: org.apache.spark.graphx.EdgeContext[User,Int,(Int, Double)] \u003d\u003e Unit, mergeMsg: ((Int, Double), (Int, Double)) \u003d\u003e (Int, Double), tripletFields: org.apache.spark.graphx.TripletFields)(implicit evidence$11: scala.reflect.ClassTag[(Int, Double)])org.apache.spark.graphx.VertexRDD[(Int, Double)].\nUnspecified value parameters sendMsg, mergeMsg.\n       val averageAge: VertexRDD[Double] \u003d userGraph.aggregateMessages[(Int, Double)](\n                                                                                     ^\n"
+      },
+      "dateCreated": "Dec 4, 2016 7:43:05 PM",
+      "dateStarted": "Dec 4, 2016 9:44:36 PM",
+      "dateFinished": "Dec 4, 2016 9:44:37 PM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Snippet 10 - zadanie",
+      "text": "%spark\n\n/*\n    Waszym zadaniem jest jest wywolanie alogrytmu connectedComponents na grafie older graph\n    A nastepnie wypisaniu skladowych connected components\n*/\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\nval olderGraph \u003d userGraph.subgraph(vpred \u003d (id, user) \u003d\u003e user.age \u003e\u003d 30)\n\n// compute the connected components graph here\n\n\n// display the component id of each user:\nolderGraph.vertices.leftJoin(cc.vertices) {\n  case (id, user, comp) \u003d\u003e s\"${user.name} is in component ${comp.get}\"\n}.collect.foreach{ case (id, str) \u003d\u003e println(str) }\n\n/*\nOczekiwany rezultat:\n\n    Charlie is in component 3\n    David is in component 4\n    Ed is in component 3\n    Fran is in component 3\n*/",
+      "dateUpdated": "Dec 4, 2016 9:50:43 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480880869202_1832108496",
+      "id": "20161204-194749_1466466089",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\nolderGraph: org.apache.spark.graphx.Graph[User,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@36443e87\n\ncc: org.apache.spark.graphx.Graph[org.apache.spark.graphx.VertexId,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@2d627bc0\nCharlie is in component 3\nDavid is in component 4\nEd is in component 3\nFran is in component 3\n"
+      },
+      "dateCreated": "Dec 4, 2016 7:47:49 PM",
+      "dateStarted": "Dec 4, 2016 8:26:19 PM",
+      "dateFinished": "Dec 4, 2016 8:26:21 PM",
       "status": "FINISHED",
       "progressUpdateIntervalMs": 500
     },
@@ -124,15 +494,15 @@
   "name": "Apache Spark - GraphX",
   "id": "2C4QDEKRU",
   "angularObjects": {
-    "2C582M71K:shared_process": [],
-    "2C38248QT:shared_process": [],
-    "2C3XGX7VJ:shared_process": [],
-    "2C2WH6FYK:shared_process": [],
-    "2C4KBZCWU:shared_process": [],
-    "2C2NKBKV5:shared_process": [],
-    "2C5F9VEX4:shared_process": [],
-    "2C4K9AT4T:shared_process": [],
-    "2C5E59H8D:shared_process": []
+    "2C3K545SF:shared_process": [],
+    "2C3VD16JY:shared_process": [],
+    "2C3RV46CN:shared_process": [],
+    "2C2MW31MG:shared_process": [],
+    "2C43SX4GF:shared_process": [],
+    "2C36RHUW7:shared_process": [],
+    "2C59WSV73:shared_process": [],
+    "2C2EPCTC7:shared_process": [],
+    "2C2Z45BK5:shared_process": []
   },
   "config": {},
   "info": {}
