@@ -379,9 +379,9 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Snippet 10 - zadanie",
+      "title": "Snippet 10 - zadanie ConnectedComponents",
       "text": "%spark\n\n/*\n    Waszym zadaniem jest jest wywolanie alogrytmu connectedComponents na grafie older graph\n    A nastepnie wypisaniu skladowych connected components\n*/\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\nval olderGraph \u003d userGraph.subgraph(vpred \u003d (id, user) \u003d\u003e user.age \u003e\u003d 30)\n\n// compute the connected components graph here\n\n\n// display the component id of each user:\nolderGraph.vertices.leftJoin(cc.vertices) {\n  case (id, user, comp) \u003d\u003e s\"${user.name} is in component ${comp.get}\"\n}.collect.foreach{ case (id, str) \u003d\u003e println(str) }\n\n/*\nOczekiwany rezultat:\n\n    Charlie is in component 3\n    David is in component 4\n    Ed is in component 3\n    Fran is in component 3\n*/",
-      "dateUpdated": "Dec 5, 2016 7:57:30 AM",
+      "dateUpdated": "Dec 5, 2016 5:55:21 PM",
       "config": {
         "colWidth": 12.0,
         "graph": {
@@ -421,9 +421,9 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Zadanie 2 (polecenia na slajdach)",
-      "text": "%spark\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\nimport scala.util.MurmurHash\n\nval dataFrame \u003d sqlContext.read.options(Map(\"header\" -\u003e \"true\")).csv(\"data/2008.csv\")\n\n// zobaczmy na schemat wczytanych danych \ndataFrame.printSchema\n\n// zobaczmy na przykladowe dane\ndataFrame.take(2)\n\n// przygotujmy struktury potrzebne do stwoerzenia graphx\u0027owego grafu\n\nval flightsFromTo \u003d dataFrame.select($\"Origin\",$\"Dest\")\nval airportCodes \u003d dataFrame.select($\"Origin\", $\"Dest\").flatMap(x \u003d\u003e Iterable(x(0).toString, x(1).toString))\nval airportVertices: RDD[(VertexId, String)] \u003d airportCodes.distinct().map((x : String) \u003d\u003e ((MurmurHash.stringHash(x): Long), x)).rdd\nval defaultAirport \u003d (\"Missing\")\nval flightEdges \u003d flightsFromTo.map(x \u003d\u003e ((MurmurHash.stringHash(x(0).toString),MurmurHash.stringHash(x(1).toString)), 1)).rdd.reduceByKey(_+_).map(x \u003d\u003e Edge(x._1._1, x._1._2,x._2))\nval graph \u003d Graph(airportVertices, flightEdges, defaultAirport)\ngraph.persist() // we\u0027re going to be using it a lot\n\n// Basic statistic\n\n// Jak duzy jest nasz graf \ngraph.numVertices // 305\ngraph.numEdges // 5366\n\n// 10 najczestszych lotow z lotniska do lotniska\ngraph.triplets.sortBy(_.attr, ascending\u003dfalse).map(triplet \u003d\u003e \"There were \" + triplet.attr.toString + \" flights from \" + triplet.srcAttr + \" to \" + triplet.dstAttr + \".\").take(10)\n\n// 10 najrzadszych lotow z lotniska do lotniska\ngraph.triplets.sortBy(_.attr).map(triplet \u003d\u003e \"There were \" + triplet.attr.toString + \" flights from \" + triplet.srcAttr + \" to \" + triplet.dstAttr + \".\").take(10)\n\n// lotnisko o najwiekszej liczbie lotow przylatujacych\ngraph.inDegrees.join(airportVertices).sortBy(_._2._1, ascending\u003dfalse).take(1)\n\n// lotnisko o najwiekszej liczbie lotow odlatujacych\ngraph.outDegrees.join(airportVertices).sortBy(_._2._1, ascending\u003dfalse).take(1)\n\n// PageRank - tu czesc dla ludzi, korzystajac z utworzonych struktur prosze znalezc najbardziej popularne lotniska wg algorytmu Pange Rank\n\nval ranks \u003d graph.pageRank(0.0001).vertices\n\nval ranksAndAirports \u003d ranks.join(airportVertices).sortBy(_._2._1, ascending\u003dfalse).map(_._2._2).take(10)",
-      "dateUpdated": "Dec 4, 2016 9:07:28 AM",
+      "title": "Snippet 11 - zadanie PageRank",
+      "text": "%spark\n\n/*\n    Waszym zadaniem jest znalezienie dla każdego użytkownika wartości (ranking) według Page Rank\n*/\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\n// Load the edges as a graph\nval graph \u003d GraphLoader.edgeListFile(sc, \"data/followers.txt\")\n// run dynamic PageRank on graph object with tolerance 0.0001\nval ranks \u003d // Iplement here\n// Join the ranks with the usernames\nval users \u003d sc.textFile(\"data/users.txt\").map { line \u003d\u003e\n  val fields \u003d line.split(\",\")\n  (fields(0).toLong, fields(1))\n}\nval ranksByUsername \u003d users.join(ranks).map {\n  case (id, (username, rank)) \u003d\u003e (username, rank)\n}\n// Print the result\nprintln(ranksByUsername.collect().mkString(\"\\n\"))\n\n/*\nOczekiwany rezultat:\n    (justinbieber,0.15)\n    (matei_zaharia,0.7013599933629602)\n    (ladygaga,1.390049198216498)\n    (BarackObama,1.4588814096664682)\n    (jeresig,0.9993442038507723)\n    (odersky,1.2973176314422592)\n*/",
+      "dateUpdated": "Dec 5, 2016 6:52:58 PM",
       "config": {
         "colWidth": 12.0,
         "graph": {
@@ -441,24 +441,66 @@
           }
         },
         "enabled": true,
-        "editorMode": "ace/mode/scala",
-        "title": true
+        "title": true,
+        "editorMode": "ace/mode/scala"
       },
       "settings": {
         "params": {},
         "forms": {}
       },
       "apps": [],
-      "jobName": "paragraph_1480783042178_1043734289",
-      "id": "20161203-163722_48549069",
+      "jobName": "paragraph_1480956372786_1494069483",
+      "id": "20161205-164612_1410792175",
       "result": {
         "code": "SUCCESS",
         "type": "TEXT",
-        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\nimport scala.util.MurmurHash\n\ndataFrame: org.apache.spark.sql.DataFrame \u003d [Year: string, Month: string ... 27 more fields]\nroot\n |-- Year: string (nullable \u003d true)\n |-- Month: string (nullable \u003d true)\n |-- DayofMonth: string (nullable \u003d true)\n |-- DayOfWeek: string (nullable \u003d true)\n |-- DepTime: string (nullable \u003d true)\n |-- CRSDepTime: string (nullable \u003d true)\n |-- ArrTime: string (nullable \u003d true)\n |-- CRSArrTime: string (nullable \u003d true)\n |-- UniqueCarrier: string (nullable \u003d true)\n |-- FlightNum: string (nullable \u003d true)\n |-- TailNum: string (nullable \u003d true)\n |-- ActualElapsedTime: string (nullable \u003d true)\n |-- CRSElapsedTime: string (nullable \u003d true)\n |-- AirTime: string (nullable \u003d true)\n |-- ArrDelay: string (nullable \u003d true)\n |-- DepDelay: string (nullable \u003d true)\n |-- Origin: string (nullable \u003d true)\n |-- Dest: string (nullable \u003d true)\n |-- Distance: string (nullable \u003d true)\n |-- TaxiIn: string (nullable \u003d true)\n |-- TaxiOut: string (nullable \u003d true)\n |-- Cancelled: string (nullable \u003d true)\n |-- CancellationCode: string (nullable \u003d true)\n |-- Diverted: string (nullable \u003d true)\n |-- CarrierDelay: string (nullable \u003d true)\n |-- WeatherDelay: string (nullable \u003d true)\n |-- NASDelay: string (nullable \u003d true)\n |-- SecurityDelay: string (nullable \u003d true)\n |-- LateAircraftDelay: string (nullable \u003d true)\n\n\nres46: Array[org.apache.spark.sql.Row] \u003d Array([2008,1,3,4,2003,1955,2211,2225,WN,335,N712SW,128,150,116,-14,8,IAD,TPA,810,4,8,0,null,0,NA,NA,NA,NA,NA], [2008,1,3,4,754,735,1002,1000,WN,3231,N772SW,128,145,113,2,19,IAD,TPA,810,5,10,0,null,0,NA,NA,NA,NA,NA])\n\nflightsFromTo: org.apache.spark.sql.DataFrame \u003d [Origin: string, Dest: string]\n\nairportCodes: org.apache.spark.sql.Dataset[String] \u003d [value: string]\n\nwarning: there was one deprecation warning; re-run with -deprecation for details\n\nairportVertices: org.apache.spark.rdd.RDD[(org.apache.spark.graphx.VertexId, String)] \u003d MapPartitionsRDD[1984] at rdd at \u003cconsole\u003e:161\n\ndefaultAirport: String \u003d Missing\n\nwarning: there were two deprecation warnings; re-run with -deprecation for details\n\nflightEdges: org.apache.spark.rdd.RDD[org.apache.spark.graphx.Edge[Int]] \u003d MapPartitionsRDD[1991] at map at \u003cconsole\u003e:161\n\ngraph: org.apache.spark.graphx.Graph[String,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@8b851c2\n\nres47: org.apache.spark.graphx.Graph[String,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@8b851c2\n\nres48: Long \u003d 305\n\nres49: Long \u003d 5366\n\nres50: Array[String] \u003d Array(There were 13788 flights from SFO to LAX., There were 13390 flights from LAX to SFO., There were 12383 flights from OGG to HNL., There were 12035 flights from LGA to BOS., There were 12029 flights from BOS to LGA., There were 12014 flights from HNL to OGG., There were 11773 flights from LAX to LAS., There were 11729 flights from LAS to LAX., There were 11257 flights from LAX to SAN., There were 11224 flights from SAN to LAX.)\n\nres51: Array[String] \u003d Array(There were 1 flights from PDX to MSN., There were 1 flights from BOS to GGG., There were 1 flights from DEN to ROC., There were 1 flights from DEN to CYS., There were 1 flights from PHL to GRR., There were 1 flights from PHL to ICT., There were 1 flights from FSD to MSN., There were 1 flights from FSD to SDF., There were 1 flights from BTV to IND., There were 1 flights from TUL to OMA.)\n\nres52: Array[(org.apache.spark.graphx.VertexId, (Int, String))] \u003d Array((2042033420,(173,ATL)))\n\nres53: Array[(org.apache.spark.graphx.VertexId, (Int, String))] \u003d Array((2042033420,(173,ATL)))\n\nranks: org.apache.spark.graphx.VertexRDD[Double] \u003d VertexRDDImpl[2827] at RDD at VertexRDD.scala:57\n\nranksAndAirports: Array[String] \u003d Array(ATL, DFW, ORD, MSP, SLC, DEN, DTW, IAH, CVG, LAX)\n"
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\ngraph: org.apache.spark.graphx.Graph[Int,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@24a653a\n\nranks: org.apache.spark.graphx.VertexRDD[Double] \u003d VertexRDDImpl[897] at RDD at VertexRDD.scala:57\n\nusers: org.apache.spark.rdd.RDD[(Long, String)] \u003d MapPartitionsRDD[902] at map at \u003cconsole\u003e:31\n\nranksByUsername: org.apache.spark.rdd.RDD[(String, Double)] \u003d MapPartitionsRDD[906] at map at \u003cconsole\u003e:37\n(justinbieber,0.15)\n(matei_zaharia,0.7013599933629602)\n(ladygaga,1.390049198216498)\n(BarackObama,1.4588814096664682)\n(jeresig,0.9993442038507723)\n(odersky,1.2973176314422592)\n"
       },
-      "dateCreated": "Dec 3, 2016 4:37:22 PM",
-      "dateStarted": "Dec 3, 2016 10:23:51 PM",
-      "dateFinished": "Dec 3, 2016 10:25:42 PM",
+      "dateCreated": "Dec 5, 2016 4:46:12 PM",
+      "dateStarted": "Dec 5, 2016 5:51:35 PM",
+      "dateFinished": "Dec 5, 2016 5:51:55 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Snippet 12 - zadanie TriangleCount",
+      "text": "%spark\n\n/*\n     Dla każdego użytkownika wylicz jego trójki (triangle counting)\n*/\n\nimport org.apache.spark.graphx._\nimport org.apache.spark.rdd.RDD\n\n// Load the edges in canonical order and partition the graph for triangle count\nval graph \u003d GraphLoader.edgeListFile(sc, \"data/followers.txt\", true)\n  .partitionBy(PartitionStrategy.RandomVertexCut)\n// Find the connected components and get vertices\n\n// Join the triangle counts with the usernames\nval users \u003d sc.textFile(\"data/users.txt\").map { line \u003d\u003e\n  val fields \u003d line.split(\",\")\n  (fields(0).toLong, fields(1))\n}\nval triCountByUsername \u003d users.join(triCounts).map { case (id, (username, tc)) \u003d\u003e\n  (username, tc)\n}\n// Print the result\nprintln(triCountByUsername.collect().mkString(\"\\n\"))\n\n/*\nOczekiwany rezultat:\n    (justinbieber,0)\n    (matei_zaharia,1)\n    (ladygaga,0)\n    (BarackObama,0)\n    (jeresig,1)\n    (odersky,1)\n*/",
+      "dateUpdated": "Dec 5, 2016 6:53:27 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {},
+          "map": {
+            "baseMapType": "Streets",
+            "isOnline": true,
+            "pinCols": []
+          }
+        },
+        "enabled": true,
+        "title": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1480956409562_-2121953921",
+      "id": "20161205-164649_1200575871",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "\nimport org.apache.spark.graphx._\n\nimport org.apache.spark.rdd.RDD\n\ngraph: org.apache.spark.graphx.Graph[Int,Int] \u003d org.apache.spark.graphx.impl.GraphImpl@306cf5f\n\ntriCounts: org.apache.spark.graphx.VertexRDD[Int] \u003d VertexRDDImpl[976] at RDD at VertexRDD.scala:57\n\nusers: org.apache.spark.rdd.RDD[(Long, String)] \u003d MapPartitionsRDD[981] at map at \u003cconsole\u003e:35\n\ntriCountByUsername: org.apache.spark.rdd.RDD[(String, Int)] \u003d MapPartitionsRDD[985] at map at \u003cconsole\u003e:41\n(justinbieber,0)\n(matei_zaharia,1)\n(ladygaga,0)\n(BarackObama,0)\n(jeresig,1)\n(odersky,1)\n"
+      },
+      "dateCreated": "Dec 5, 2016 4:46:49 PM",
+      "dateStarted": "Dec 5, 2016 5:52:01 PM",
+      "dateFinished": "Dec 5, 2016 5:52:03 PM",
       "status": "FINISHED",
       "progressUpdateIntervalMs": 500
     },
@@ -502,15 +544,15 @@
   "name": "Apache Spark - GraphX",
   "id": "2C4QDEKRU",
   "angularObjects": {
-    "2C3K545SF:shared_process": [],
-    "2C3VD16JY:shared_process": [],
-    "2C3RV46CN:shared_process": [],
-    "2C2MW31MG:shared_process": [],
-    "2C43SX4GF:shared_process": [],
-    "2C36RHUW7:shared_process": [],
-    "2C59WSV73:shared_process": [],
-    "2C2EPCTC7:shared_process": [],
-    "2C2Z45BK5:shared_process": []
+    "2C2P64GKQ:shared_process": [],
+    "2C3KHZ36P:shared_process": [],
+    "2C34ZSKQ3:shared_process": [],
+    "2C3QY283C:shared_process": [],
+    "2C5NF8QXR:shared_process": [],
+    "2C64E8ZWU:shared_process": [],
+    "2C3ED74D7:shared_process": [],
+    "2C4G94W63:shared_process": [],
+    "2C4A7E33R:shared_process": []
   },
   "config": {},
   "info": {}
