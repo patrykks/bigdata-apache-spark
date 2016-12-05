@@ -28,3 +28,10 @@
 4. Your Zeppelin notepad will be running at `localhost:8080`
 
 ### Part 2 Mazerunner
+1. run
+
+ 1. Linux: `sudo docker run -v /var/run/docker.sock:/var/run/docker.sock \-ti kbastani/spark-neo4j up -d`
+
+ 2. Windows: `docker run -v /var/run/docker.sock:/var/run/docker.sock -ti kbastani/spark-neo4j up -d`
+
+2. Your neo4j will be running at `localhost:7474/browser`
